@@ -35,6 +35,14 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.wso2.carbon.uuf.sample</groupId>
+            <artifactId>org.wso2.carbon.uuf.sample.foundation.api</artifactId>
+            <version>${carbon.uuf.version}</version>
+        </dependency>
+    </dependencies>
+
     <build>
         <plugins>
             <plugin>
@@ -48,6 +56,11 @@
                         <goals>
                             <goal>create-component</goal>
                         </goals>
+                        <configuration>
+                            <instructions>
+                                <Import-Package>org.wso2.carbon.uuf.sample.foundation.api</Import-Package>
+                            </instructions>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

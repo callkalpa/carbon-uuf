@@ -77,6 +77,11 @@
             <artifactId>org.wso2.carbon.uuf.sample.simple-auth.bundle</artifactId>
             <version>${carbon.uuf.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.uuf.sample</groupId>
+            <artifactId>org.wso2.carbon.uuf.sample.foundation.api</artifactId>
+            <version>${carbon.uuf.version}</version>
+        </dependency>
     </dependencies>
 
 
@@ -106,6 +111,10 @@
                                 </bundle>
                                 <bundle>
                                     <symbolicName>org.wso2.carbon.uuf.sample.simple-auth.bundle</symbolicName>
+                                    <version>${carbon.uuf.version}</version>
+                                </bundle>
+                                <bundle>
+                                    <symbolicName>org.wso2.carbon.uuf.sample.foundation.api</symbolicName>
                                     <version>${carbon.uuf.version}</version>
                                 </bundle>
                             </bundles>
