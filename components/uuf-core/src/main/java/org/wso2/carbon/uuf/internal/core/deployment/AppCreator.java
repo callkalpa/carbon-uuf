@@ -20,6 +20,10 @@ package org.wso2.carbon.uuf.internal.core.deployment;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.wso2.carbon.uuf.api.Placeholder;
 import org.wso2.carbon.uuf.api.reference.AppReference;
 import org.wso2.carbon.uuf.api.reference.ComponentReference;
@@ -42,11 +46,15 @@ import org.wso2.carbon.uuf.internal.core.UriPatten;
 import org.wso2.carbon.uuf.internal.core.auth.SessionRegistry;
 import org.wso2.carbon.uuf.internal.util.NameUtils;
 import org.wso2.carbon.uuf.spi.RenderableCreator;
+import org.wso2.msf4j.Microservice;
+import org.wso2.msf4j.MicroservicesRunner;
 import org.yaml.snakeyaml.Yaml;
 
 import java.util.Collections;
+import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -59,6 +67,8 @@ import static org.wso2.carbon.uuf.internal.core.deployment.DependencyTreeParser.
 import static org.wso2.carbon.uuf.internal.util.NameUtils.getFullyQualifiedName;
 
 public class AppCreator {
+
+    private static final Logger log = LoggerFactory.getLogger(AppCreator.class);
 
     private final Map<String, RenderableCreator> renderableCreators;
     private final Set<String> supportedExtensions;
@@ -110,6 +120,40 @@ public class AppCreator {
                 Component component = createComponent(componentName, componentVersion, componentContextPath,
                                                       componentReference, classLoader, lookup);
                 lookup.add(component);
+
+                // deploy the microservices associated with the component
+                /* todo: check if there are microservices to be deployed
+                Since we do not read from the config ATM, the microservice class is hardcoded.
+
+                Assume this microservice
+                is from foundation component.
+                */
+
+                if("foundation".equals(componentSimpleName)) {
+                    String microserviceClassname = "org.wso2.carbon.uuf.sample.foundation.api.HelloService";
+                    String apiRootContext = "/hello";
+
+                    // todo: check whether a service with the same context path is already registered
+                    BundleContext bundleContext = FrameworkUtil.getBundle(this.getClass()).getBundleContext();
+                    try {
+
+                        Dictionary<String, String> properties = new Hashtable<>();
+                        properties.put("contextPath", appContextPath + componentContextPath + "/api" + apiRootContext);
+
+                        log.info("Registering API");
+
+                        bundleContext.registerService(Microservice.class,
+                                (Microservice) classLoader.loadClass(microserviceClassname).newInstance(), properties);
+
+                    } catch (InstantiationException e) {
+                        e.printStackTrace();
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    } catch (ClassNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                }
+
                 createdComponents.put(componentName, component);
             }
         }
