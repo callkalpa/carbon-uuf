@@ -140,7 +140,10 @@ public class AppCreator {
                         Dictionary<String, String> properties = new Hashtable<>();
                         properties.put("contextPath", appContextPath + componentContextPath + "/api" + apiRootContext);
 
-                        log.info("Registering API");
+                        // if the API is secured, use this property
+                        properties.put("CHANNEL_ID", "netty-gw-https");
+
+                        log.debug("Registering API");
 
                         bundleContext.registerService(Microservice.class,
                                 (Microservice) classLoader.loadClass(microserviceClassname).newInstance(), properties);
