@@ -20,8 +20,6 @@ package org.wso2.carbon.uuf.internal.core.deployment;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.uuf.api.Placeholder;
@@ -47,7 +45,6 @@ import org.wso2.carbon.uuf.internal.core.auth.SessionRegistry;
 import org.wso2.carbon.uuf.internal.util.NameUtils;
 import org.wso2.carbon.uuf.spi.RenderableCreator;
 import org.wso2.msf4j.Microservice;
-import org.wso2.msf4j.MicroservicesRunner;
 import org.yaml.snakeyaml.Yaml;
 
 import java.util.Collections;
@@ -129,25 +126,21 @@ public class AppCreator {
                 is from foundation component.
                 */
 
-                if("foundation".equals(componentSimpleName)) {
+                if ("foundation".equals(componentSimpleName)) {
                     String microserviceClassname = "org.wso2.carbon.uuf.sample.foundation.api.HelloService";
                     String apiRootContext = "/hello";
 
-                    // todo: check whether a service with the same context path is already registered
-                    BundleContext bundleContext = FrameworkUtil.getBundle(this.getClass()).getBundleContext();
+                    String apiContext = appContextPath + componentContextPath + "/api" + apiRootContext;
+                    Dictionary<String, String> properties = new Hashtable<>();
+                    properties.put("contextPath", apiContext);
+                    // if the API is secured, use this property
+                    properties.put("CHANNEL_ID", "netty-gw-https");
+                    log.debug("Deploying microservice " + microserviceClassname + " in component " + componentName +
+                            " with context " + apiContext);
+
                     try {
-
-                        Dictionary<String, String> properties = new Hashtable<>();
-                        properties.put("contextPath", appContextPath + componentContextPath + "/api" + apiRootContext);
-
-                        // if the API is secured, use this property
-                        properties.put("CHANNEL_ID", "netty-gw-https");
-
-                        log.debug("Registering API");
-
-                        bundleContext.registerService(Microservice.class,
-                                (Microservice) classLoader.loadClass(microserviceClassname).newInstance(), properties);
-
+                        classLoaderProvider.registerService(Microservice.class,
+                                (Microservice)classLoader.loadClass(microserviceClassname).newInstance(), properties);
                     } catch (InstantiationException e) {
                         e.printStackTrace();
                     } catch (IllegalAccessException e) {
