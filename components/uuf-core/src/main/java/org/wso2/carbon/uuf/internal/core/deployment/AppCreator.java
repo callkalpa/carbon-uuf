@@ -126,16 +126,16 @@ public class AppCreator {
                 is from foundation component.
                 */
 
-                if ("foundation".equals(componentSimpleName)) {
-                    String microserviceClassname = "org.wso2.carbon.uuf.sample.foundation.api.HelloService";
-                    String apiRootContext = "/hello";
+                if ("view".equals(componentSimpleName)) {
+                    String microserviceClassname = "org.wso2.carbon.dashboards.metadata.api.MetadataProviderAPI";
+                    String apiRootContext = "/metadata";
 
                     String apiContext = appContextPath + componentContextPath + "/api" + apiRootContext;
                     Dictionary<String, String> properties = new Hashtable<>();
                     properties.put("contextPath", apiContext);
                     // if the API is secured, use this property
-                    properties.put("CHANNEL_ID", "netty-gw-https");
-                    log.debug("Deploying microservice " + microserviceClassname + " in component " + componentName +
+//                    properties.put("CHANNEL_ID", "netty-gw-https");
+                    log.info("Deploying microservice " + microserviceClassname + " in component " + componentName +
                             " with context " + apiContext);
 
                     try {
